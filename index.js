@@ -18,6 +18,10 @@ var connection = mysql.createConnection({
     }
    
     console.log('connected as id ' + connection.threadId);
+    var sql = "CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))";
+    connection.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log("Table created");
   });
 
 var server = app.listen(port, function () {
