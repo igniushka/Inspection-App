@@ -20,23 +20,6 @@ var connection = mysql.createConnection({
     console.log('connected as id ' + connection.threadId);
   });
 
-// const pool = createPool({
-//     host:'eu-cdbr-west-01.cleardb.com',
-//     user:'b06e98fcde28f0',
-//     password:'cd51e4b0',
-//     database:'heroku_05fce074f5dba05',
-//     connectionLimit:10
-// });
-
-// pool.connect((err) => {
-//   if(err){
-//     console.log('Error connecting to Db');
-//     return;
-//   }
-//   console.log('Connection established');
-// });
-
-
-var server = app.listen(5000, function () {
-    console.log(`Server running on port ${port}, http://localhost:${port}`);
+var server = app.listen(port, function () {
+    console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
 });
