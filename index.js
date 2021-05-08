@@ -18,7 +18,15 @@ var connection = mysql.createConnection({
     }
    
     console.log('connected as id ' + connection.threadId);
-    var sql = "CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))";
+    
+    //drop existing tables first
+    connection.query("DROP TABLE user", function (err, result) {  
+        if (err){console.log("failed to delete user table")} else console.log("user table deleted");  
+});  
+
+
+
+    var sql = "CREATE TABLE user (name VARCHAR(255), password VARCHAR(255))";
     connection.query(sql, function (err, result) {
         if (err) throw err;
         console.log("Table created");
