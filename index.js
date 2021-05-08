@@ -7,7 +7,7 @@ const pool = createPool({
     host:'eu-cdbr-west-01.cleardb.com',
     user:'b06e98fcde28f0',
     password:'cd51e4b0',
-    database:'<dbname>',
+    database:'heroku_05fce074f5dba05',
     connectionLimit:10
 });
 
