@@ -23,6 +23,7 @@ var connection = mysql.createConnection({
         if (err) throw err;
         console.log("Table created");
   });
+});
 
 var server = app.listen(port, function () {
     console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
