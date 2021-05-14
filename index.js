@@ -42,3 +42,9 @@ app.post('/signup', (req, res) => {
   console.log(req.body.username)
   return res.send('POST HTTP method on user resource');
 });
+
+app.get('/signup', (req, res) => {
+  console.log("Signup api get called")
+  // console.log(req.body.username)
+  return res.send('POST HTTP method on user resource');
+});
