@@ -29,10 +29,16 @@ var connection = mysql.createConnection({
     var sql = "CREATE TABLE user (name VARCHAR(255), password VARCHAR(255))";
     connection.query(sql, function (err, result) {
         if (err) throw err;
-        console.log("Table created");
+        console.log("user table created");
   });
 });
 
 var server = app.listen(port, function () {
     console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
+});
+
+app.post('/signup', (req, res) => {
+  console.log("Signup api called")
+  console.log(req.body.username)
+  return res.send('POST HTTP method on user resource');
 });
