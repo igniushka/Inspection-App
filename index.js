@@ -59,6 +59,7 @@ app.listen(port, function () {
 
 app.post('/signup', (req, res) => {
   console.log("Signup api post called")
+  console.log(req)
   console.log(req.body)
   console.log(req.body?.username)
   return res.send('POST HTTP method on user resource');
