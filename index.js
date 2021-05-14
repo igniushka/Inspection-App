@@ -39,7 +39,7 @@ var server = app.listen(port, function () {
 
 app.post('/signup', (req, res) => {
   console.log("Signup api called")
-  console.log(req.body.username)
+  // console.log(req.body.username)
   return res.send('POST HTTP method on user resource');
 });
 
