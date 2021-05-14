@@ -33,12 +33,13 @@ var connection = mysql.createConnection({
   });
 });
 
-// var server = app.listen(port, function () {
-//     console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
-// });
+
+app.listen(port, function () {
+    console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
+});
 
 app.post('/signup', (req, res) => {
-  console.log("Signup api called")
+  console.log("Signup api post called")
   // console.log(req.body.username)
   return res.send('POST HTTP method on user resource');
 });
