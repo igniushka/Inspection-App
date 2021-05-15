@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+var router = express.Router();
 const mysql = require("mysql");
 const app = express();
 const port = process.env.PORT || 5000;
