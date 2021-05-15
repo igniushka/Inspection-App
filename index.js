@@ -79,7 +79,7 @@ router.post('/signup', function (req, res, next) {
   if (validateString(username) && (validateString(password))){
     //hash the password
     bcrypt
-    .hash(input, 5)
+    .hash(password, 5)
     .then(hash => {
       var sql = "INSERT INTO user (name, password) VALUES ('" + username + "', '"+ hash +"')";
       connection.query(sql, function (err, result) {
