@@ -1,5 +1,8 @@
 const express = require('express');
-var router = express.Router();
+const bodyParser = require('body-parser')
+const jsonParser = bodyParser.json()
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
+const router = express.Router();
 const mysql = require("mysql");
 const app = express();
 const port = process.env.PORT || 5000;
@@ -68,8 +71,8 @@ router.post('/signup', function (req, res, next) {
 });
 
 app.use(router)
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
 app.listen(port, function () {
   console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
 });
