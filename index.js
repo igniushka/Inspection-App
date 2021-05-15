@@ -11,6 +11,9 @@ const SECRET = "A VERY SECRET SECRET"
 
 const BAD_REQUEST = 400
 const INTERNAL_SERVER_ERROR = 500
+const MINUTE = 60
+const HALF_HOUR = 30 * MINUTE
+
 
 var db_config = {
   host: 'eu-cdbr-west-01.cleardb.com',
@@ -127,22 +130,50 @@ router.post('/signup', (req, res) => {
 
 });
 
+async function updateToken(name, token){
+  //delete existing token first
+  var sql = "DELETE FROM token WHERE name = '" + name+"'";
+  connection.query(sql, (err, result) => {
+    if (err) {
+      console.log("failed to delete a token (likely it did not exist)")
+    }
+    else { 
+      console.log("token deleted") }
+      });
+  var sql = "INSERT INTO token (name, token) VALUES ('" + name + "', '"+ token +"')";
+  connection.query(sql, (err, result) => {
+    if (err) {
+      console.log("failed to update token")
+      return false
+    }
+    else {
+      console.log("token updated") }
+      return true
+      });
+}
+
 router.post('/login', (req, res) => {
   console.log("Login api post called")
   const username = req.body.username
   const password = req.body.password
   if (validateString(username) && (validateString(password))){
     var sql = "SELECT * FROM user WHERE name = '" + username+"'";
-    connection.query(sql, function (err, result) {
+    connection.query(sql, (err, result) => {
       if (err) {return returnInternalError(res)}
       else {
         if (result.length!=1){ return returnInvalidUsernameOrPassword(res); }
         else {
           var accessToken = jwt.sign({
             data: username
-          }, SECRET, { expiresIn: 60 });
-          console.log(accessToken)
-          return res.json({message: 'One user found!', token: accessToken});
+          }, SECRET, { expiresIn: MINUTE });
+          updated = await updateToken(username, accessToken)
+          if (updated) {
+            console.log("token updated")
+          return res.json({message: 'Success!', token: accessToken});
+          } else {
+            console.log("token update failed?")
+            return returnInternalError(res)
+          }
         }}
       });
   } else {
