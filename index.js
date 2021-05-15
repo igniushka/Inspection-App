@@ -1,4 +1,5 @@
 const express = require('express');
+const router = express.Router();
 const mysql = require("mysql");
 const app = express();
 const port = process.env.PORT || 5000;
@@ -57,7 +58,7 @@ app.listen(port, function () {
     console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
 });
 
-app.post('/signup', (req, res) => {
+router.post('/signup', (req, res) => {
   console.log("Signup api post called")
   // console.log(req)
   // console.log(req.body)
