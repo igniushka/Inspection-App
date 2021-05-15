@@ -37,7 +37,7 @@ function handleDisconnect() {
 
 
 
-    var sql = "CREATE TABLE user (name VARCHAR(255), password VARCHAR(255))";
+    var sql = "CREATE TABLE user (name VARCHAR(255) PRIMARY KEY, password VARCHAR(255))";
     connection.query(sql, function (err, result) {
         if (err) throw err;
         console.log("user table created");
@@ -77,25 +77,33 @@ router.post('/signup', function (req, res, next) {
   const username = req.body.username
   const password = req.body.password
   if (validateString(username) && (validateString(password))){
-    //hash the password
-    bcrypt
-    .hash(password, 5)
-    .then(hash => {
-      var sql = "INSERT INTO user (name, password) VALUES ('" + username + "', '"+ hash +"')";
-      connection.query(sql, function (err, result) {
-          if (err) {return returnInternalError(res)}
-          else {
-            return res.json({
-              message: 'User created!'
-            });
-          }
-    });
-    })
-    .catch(err =>{
-      return returnInternalError(res)
-    })    
+    //check if username exist in the database
+    var sql = "SELECT name FROM user WHERE name = '" + username+"'";
+    connection.query(sql, function (err, result) {
+      if (err) {return returnInternalError(res)}
+      else {
+        console.log(result)
+        console.log(result.length)
+        if (result.length == 0){
+              //hash the password
+             bcrypt.hash(password, 5).then(hash => {
+              var sql = "INSERT INTO user (name, password) VALUES ('" + username + "', '"+ hash +"')";
+              connection.query(sql, function (err, result) {
+              if (err) {return returnInternalError(res)}
+              else { return res.json({message: 'User created!'}); }
+                });
+               }) .catch(err =>{ return returnInternalError(res)}) 
+
+        } else {
+          return res.status(BAD_REQUEST).json({
+            message: 'Choose a different Username'
+          });
+        }
+      }
+});
+   
   } else {
-    res.status(BAD_REQUEST).json({
+   return res.status(BAD_REQUEST).json({
       message: 'Username and password must be alphanumeric'
     });
   }
