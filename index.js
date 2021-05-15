@@ -148,7 +148,7 @@ router.post('/login', (req, res) => {
             //delete existing token first
             connection.query("DELETE FROM token WHERE name = '" + username+"'", (ignore) =>{
               //insert new token
-              connection.query("INSERT INTO token (name, token) VALUES ('" + username + "', '"+ token +"')", (err) => {
+              connection.query("INSERT INTO token (name, token) VALUES ('" + username + "', '"+ accessToken +"')", (err) => {
                 if (err) {
                   console.log("failed to update token")
                   return returnInternalError(res)
