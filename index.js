@@ -63,5 +63,8 @@ app.post('/signup', (req, res) => {
   // console.log(req.body)
   console.log(req.body?.username)
   console.log(req.body?.password)
+  res.json({
+    message: 'Test'
+  });
   return res.send('POST HTTP method on user resource');
 });
