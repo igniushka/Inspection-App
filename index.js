@@ -54,9 +54,6 @@ function handleDisconnect() {
 handleDisconnect();
 
 
-app.listen(port, function () {
-    console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
-});
 
 router.post('/signup', function (req, res, next) {
   console.log("Signup api post called")
@@ -68,4 +65,9 @@ router.post('/signup', function (req, res, next) {
   return res.json({
     message: 'Test'
   });
+});
+
+app.use(router)
+app.listen(port, function () {
+  console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
 });
