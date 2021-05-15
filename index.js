@@ -130,12 +130,6 @@ router.post('/signup', (req, res) => {
 
 });
 
-async function updateToken(name, token){
-  //delete existing token first
-  await connection.query("DELETE FROM token WHERE name = '" + name+"'");
-  //update new token
-  await connection.query("INSERT INTO token (name, token) VALUES ('" + name + "', '"+ token +"')")
-}
 
 router.post('/login', (req, res) => {
   console.log("Login api post called")
@@ -151,9 +145,17 @@ router.post('/login', (req, res) => {
           var accessToken = jwt.sign({
             data: username
           }, SECRET, { expiresIn: MINUTE });
-          await updateToken(username, accessToken)
-          console.log("token updated")
-          return res.json({message: 'Success!', token: accessToken});
+            //delete existing token first
+            await connection.query("DELETE FROM token WHERE name = '" + username+"'");
+            connection.query("INSERT INTO token (name, token) VALUES ('" + username + "', '"+ token +"')", (err) => {
+              if (err) {
+                console.log("failed to update token")
+                return returnInternalError(res)
+              }
+              else {
+                console.log("token updated") }
+                return res.json({message: 'Success!', token: accessToken});
+              });
         }}
       });
   } else {
