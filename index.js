@@ -35,7 +35,10 @@ function handleDisconnect() {
     //drop existing tables first
     connection.query("DROP TABLE user", function (err, result) {  
         if (err){console.log("failed to delete user table")} else console.log("user table deleted");  
-});  
+    });  
+    connection.query("DROP TABLE token", function (err, result) {  
+        if (err){console.log("failed to delete token table")} else console.log("user table deleted");  
+    }); 
 
 
 
@@ -44,6 +47,12 @@ function handleDisconnect() {
         if (err) throw err;
         console.log("user table created");
   });
+
+  var sql = "CREATE TABLE token (name VARCHAR(255) PRIMARY KEY, token VARCHAR(255))";
+  connection.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("token table created");
+});
     
     
    
@@ -132,7 +141,7 @@ router.post('/login', (req, res) => {
           var accessToken = jwt.sign({
             data: username
           }, SECRET, { expiresIn: 60 });
-          console.log(result)
+          console.log(accessToken)
           return res.json({message: 'One user found!', token: accessToken});
         }}
       });
