@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require("mysql2/promise");
+const mysql = require("mysql");
 const app = express();
-const bluebird = require('bluebird');
 const port = process.env.PORT || 5000;
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -20,13 +19,12 @@ var db_config = {
   host: 'eu-cdbr-west-01.cleardb.com',
     user: 'b06e98fcde28f0',
     password: 'cd51e4b0',
-    database: 'heroku_05fce074f5dba05',
-    Promise: bluebird
+    database: 'heroku_05fce074f5dba05'
 };
 
 var connection
 function handleDisconnect() {
-  connection = await mysql.createConnection(db_config); 
+  connection = mysql.createConnection(db_config); 
                                                  
 
   connection.connect(function(err) {             
@@ -148,16 +146,18 @@ router.post('/login', (req, res) => {
             data: username
           }, SECRET, { expiresIn: MINUTE });
             //delete existing token first
-            await connection.execute("DELETE FROM token WHERE name = '" + username+"'");
-            connection.query("INSERT INTO token (name, token) VALUES ('" + username + "', '"+ token +"')", (err) => {
-              if (err) {
-                console.log("failed to update token")
-                return returnInternalError(res)
-              }
-              else {
-                console.log("token updated") }
-                return res.json({message: 'Success!', token: accessToken});
-              });
+            connection.query("DELETE FROM token WHERE name = '" + username+"'", (ignore) =>{
+              //insert new token
+              connection.query("INSERT INTO token (name, token) VALUES ('" + username + "', '"+ token +"')", (err) => {
+                if (err) {
+                  console.log("failed to update token")
+                  return returnInternalError(res)
+                }
+                else {
+                  console.log("token updated") }
+                  return res.json({message: 'Success!', token: accessToken});
+                });
+            })
         }}
       });
   } else {
