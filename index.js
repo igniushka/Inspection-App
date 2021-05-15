@@ -131,7 +131,7 @@ router.post('/login', (req, res) => {
         else {
           var accessToken = jwt.sign({
             data: username
-          }, SECRET, { expiresIn: 5 });
+          }, SECRET, { expiresIn: 60 });
           console.log(result)
           return res.json({message: 'One user found!', token: accessToken});
         }}
