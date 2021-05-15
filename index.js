@@ -166,14 +166,15 @@ router.post('/login', (req, res) => {
           var accessToken = jwt.sign({
             data: username
           }, SECRET, { expiresIn: MINUTE });
-          updated = updateToken(username, accessToken)
-          if (updated) {
-            console.log("token updated")
-          return res.json({message: 'Success!', token: accessToken});
-          } else {
-            console.log("token update failed?")
-            return returnInternalError(res)
-          }
+          updateToken(username, accessToken).then(result =>{
+            if (result) {
+              console.log("token updated")
+            return res.json({message: 'Success!', token: accessToken});
+            } else {
+              console.log("token update failed?")
+              return returnInternalError(res)
+            }
+          })
         }}
       });
   } else {
