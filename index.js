@@ -59,9 +59,9 @@ router.post('/signup', function (req, res, next) {
   console.log("Signup api post called")
   // console.log(req)
   // console.log(req.body)
-  console.log(req)
-  console.log(req.body?.username)
-  console.log(req.body?.password)
+  console.log(req.body)
+  console.log(req.username)
+  console.log(req.password)
   return res.json({
     message: 'Test'
   });
