@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
 const SECRET = "A VERY SECRET SECRET"
 
 const BAD_REQUEST = 400
+const UNAUTHORISED = 401
 const INTERNAL_SERVER_ERROR = 500
 const MINUTE = 60
 const HALF_HOUR = 30 * MINUTE
@@ -142,22 +143,31 @@ router.post('/login', (req, res) => {
       else {
         if (result.length!=1){ return returnInvalidUsernameOrPassword(res); }
         else {
-          var accessToken = jwt.sign({
-            data: username
-          }, SECRET, { expiresIn: MINUTE });
-            //delete existing token first
-            connection.query("DELETE FROM token WHERE name = '" + username+"'", (ignore) =>{
-              //insert new token
-              connection.query("INSERT INTO token (name, token) VALUES ('" + username + "', '"+ accessToken +"')", (err) => {
-                if (err) {
-                  console.log("failed to update token")
-                  return returnInternalError(res)
-                }
-                else {
-                  console.log("token updated") }
-                  return res.json({message: 'Success!', token: accessToken});
-                });
-            })
+          bcrypt.compare(password, result[0].password, (err, result) => {
+            if(err){
+              console.log("An error occurred while comparing passwords")
+              return returnInternalError(res)
+            } else if (result == false){
+              return returnInvalidUsernameOrPassword(res)
+            } else {
+              var accessToken = jwt.sign({
+                data: username
+              }, SECRET, { expiresIn: MINUTE });
+                //delete existing token first
+                connection.query("DELETE FROM token WHERE name = '" + username+"'", (ignore) =>{
+                  //insert new token
+                  connection.query("INSERT INTO token (name, token) VALUES ('" + username + "', '"+ accessToken +"')", (err) => {
+                    if (err) {
+                      console.log("failed to update token")
+                      return returnInternalError(res)
+                    }
+                    else {
+                      console.log("token updated") }
+                      return res.json({message: 'Success!', token: accessToken});
+                    });
+                })
+            }
+           })
         }}
       });
   } else {
@@ -167,12 +177,26 @@ router.post('/login', (req, res) => {
    }
 
 });
-
-router.post('/verify', (req, res) => {
+function verifyToken(req, res, next){
   console.log("verify api post called")
   const accessToken = req.body.token
   if (accessToken){
     jwt.verify(accessToken, SECRET, (err, decoded) => {
+      if(err){
+        res.status(UNAUTHORISED).json({message: 'Token expired, please log in again'})
+      }else{
+        const name = decoded.data
+        connection.query("SELECT * FROM token WHERE name = '" + name+"'", (err, result) => {
+          if(err){
+           return returnInternalError(res)
+          }else{
+            if(result.length == 1){ 
+              result[0]
+
+            } else returnInternalError(res)
+          }
+        })
+      }
       console.log(err)
       console.log(decoded)
       return res.json({message: 'Token ok'});
@@ -182,6 +206,10 @@ router.post('/verify', (req, res) => {
        message: 'invalid access token'
      });
    }
+}
+
+router.post('/verify', (req, res) => {
+
 
 });
 
