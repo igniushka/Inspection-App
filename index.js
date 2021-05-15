@@ -1,13 +1,14 @@
 const express = require('express');
-const bodyParser = require('body-parser')
 const router = express.Router();
 const mysql = require("mysql");
 const app = express();
 const port = process.env.PORT || 5000;
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+const bcrypt = require('bcrypt');
 
 const BAD_REQUEST = 400
+const INTERNAL_SERVER_ERROR = 500
 
 var db_config = {
   host: 'eu-cdbr-west-01.cleardb.com',
@@ -58,6 +59,11 @@ function handleDisconnect() {
 
 handleDisconnect();
 
+function returnInternalError(res){
+  res.status(INTERNAL_SERVER_ERROR).json({
+    message: 'An error occurred while processing request'
+  });
+}
 
 function validateString(input){
 if (input){
@@ -71,10 +77,24 @@ router.post('/signup', function (req, res, next) {
   const username = req.body.username
   const password = req.body.password
   if (validateString(username) && (validateString(password))){
-    return res.json({
-      message: 'User created!'
+    //hash the password
+    bcrypt
+    .hash(input, 5)
+    .then(hash => {
+      var sql = "INSERT INTO user (name, password) VALUES ('" + username + "', '"+ hash +"')";
+      connection.query(sql, function (err, result) {
+          if (err) {return returnInternalError(res)}
+          else {
+            return res.json({
+              message: 'User created!'
+            });
+          }
     });
-  } else{
+    })
+    .catch(err =>{
+      return returnInternalError(res)
+    })    
+  } else {
     res.status(BAD_REQUEST).json({
       message: 'Username and password must be alphanumeric'
     });
