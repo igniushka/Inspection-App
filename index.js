@@ -7,6 +7,8 @@ const port = process.env.PORT || 5000;
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
+const BAD_REQUEST = 400
+
 var db_config = {
   host: 'eu-cdbr-west-01.cleardb.com',
     user: 'b06e98fcde28f0',
@@ -57,17 +59,27 @@ function handleDisconnect() {
 handleDisconnect();
 
 
+function validateString(input){
+if (input){
+  const myRegEx  = /[^a-z\d]/i;
+  return !(myRegEx.test(input));
+} else {return false}
+}
 
 router.post('/signup', function (req, res, next) {
   console.log("Signup api post called")
-  // console.log(req)
-  // console.log(req.body)
-  console.log(req.body)
-  console.log(req.username)
-  console.log(req.password)
-  return res.json({
-    message: 'Test'
-  });
+  const username = req.body.username
+  const password = req.body.password
+  if (validateString(username) && (validateString(password))){
+    return res.json({
+      message: 'User created!'
+    });
+  } else{
+    res.status(BAD_REQUEST).json({
+      message: 'Username and password must be alphanumeric'
+    });
+  }
+
 });
 
 app.use(router)
