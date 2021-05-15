@@ -146,7 +146,7 @@ router.post('/login', (req, res) => {
             data: username
           }, SECRET, { expiresIn: MINUTE });
             //delete existing token first
-            await connection.query("DELETE FROM token WHERE name = '" + username+"'");
+            await connection.execute("DELETE FROM token WHERE name = '" + username+"'");
             connection.query("INSERT INTO token (name, token) VALUES ('" + username + "', '"+ token +"')", (err) => {
               if (err) {
                 console.log("failed to update token")
