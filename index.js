@@ -130,26 +130,11 @@ router.post('/signup', (req, res) => {
 
 });
 
-function updateToken(name, token){
+async function updateToken(name, token){
   //delete existing token first
-  var sql = "DELETE FROM token WHERE name = '" + name+"'";
-  connection.query(sql, (err, result) => {
-    if (err) {
-      console.log("failed to delete a token (likely it did not exist)")
-    }
-    else { 
-      console.log("token deleted") }
-      });
-  var sql = "INSERT INTO token (name, token) VALUES ('" + name + "', '"+ token +"')";
-  connection.query(sql, (err, result) => {
-    if (err) {
-      console.log("failed to update token")
-      return false
-    }
-    else {
-      console.log("token updated") }
-      return true
-      });
+  await connection.query("DELETE FROM token WHERE name = '" + name+"'");
+  //update new token
+  await connection.query("INSERT INTO token (name, token) VALUES ('" + name + "', '"+ token +"')")
 }
 
 router.post('/login', (req, res) => {
@@ -166,15 +151,9 @@ router.post('/login', (req, res) => {
           var accessToken = jwt.sign({
             data: username
           }, SECRET, { expiresIn: MINUTE });
-          updateToken(username, accessToken).then(result =>{
-            if (result) {
-              console.log("token updated")
-            return res.json({message: 'Success!', token: accessToken});
-            } else {
-              console.log("token update failed?")
-              return returnInternalError(res)
-            }
-          })
+          await updateToken(username, accessToken)
+          console.log("token updated")
+          return res.json({message: 'Success!', token: accessToken});
         }}
       });
   } else {
