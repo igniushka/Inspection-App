@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 const app = express();
 const port = process.env.PORT || 5000;
 app.use(express.json())
