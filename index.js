@@ -58,7 +58,7 @@ app.listen(port, function () {
     console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
 });
 
-router.post('/signup', (req, res) => {
+router.post('/signup', function (req, res, next) {
   console.log("Signup api post called")
   // console.log(req)
   // console.log(req.body)
