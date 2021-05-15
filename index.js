@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mysql = require("mysql2/promise");
 const app = express();
+const bluebird = require('bluebird');
 const port = process.env.PORT || 5000;
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -19,12 +20,13 @@ var db_config = {
   host: 'eu-cdbr-west-01.cleardb.com',
     user: 'b06e98fcde28f0',
     password: 'cd51e4b0',
-    database: 'heroku_05fce074f5dba05'
+    database: 'heroku_05fce074f5dba05',
+    Promise: bluebird
 };
 
 var connection
 function handleDisconnect() {
-  connection = mysql.createConnection(db_config); 
+  connection = await mysql.createConnection(db_config); 
                                                  
 
   connection.connect(function(err) {             
