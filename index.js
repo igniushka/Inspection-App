@@ -65,6 +65,12 @@ function returnInternalError(res){
   });
 }
 
+function returnInvalidUsernameOrPassword(res){
+  res.status(BAD_REQUEST).json({
+    message: 'Invalid username or password'
+  });
+}
+
 function validateString(input){
 if (input){
   const myRegEx  = /[^a-z\d]/i;
@@ -72,7 +78,7 @@ if (input){
 } else {return false}
 }
 
-router.post('/signup', function (req, res, next) {
+router.post('/signup', (req, res) => {
   console.log("Signup api post called")
   const username = req.body.username
   const password = req.body.password
@@ -109,6 +115,31 @@ router.post('/signup', function (req, res, next) {
   }
 
 });
+
+router.post('/login', (req, res) => {
+  console.log("Signup api post called")
+  const username = req.body.username
+  const password = req.body.password
+  if (validateString(username) && (validateString(password))){
+    var sql = "SELECT * FROM user WHERE name = '" + username+"'";
+    connection.query(sql, function (err, result) {
+      if (err) {return returnInternalError(res)}
+      else {
+        if (result.length!=1){ return returnInvalidUsernameOrPassword(res); }
+        else {
+          console.log(result)
+          return res.json({message: 'One user found!'});
+        }}
+      });
+  } else {
+    return res.status(BAD_REQUEST).json({
+       message: 'Username and password must be alphanumeric'
+     });
+   }
+
+});
+
+
 
 app.use(router)
 app.listen(port, function () {
