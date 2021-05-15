@@ -6,6 +6,8 @@ const port = process.env.PORT || 5000;
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const SECRET = "A VERY SECRET SECRET"
 
 const BAD_REQUEST = 400
 const INTERNAL_SERVER_ERROR = 500
@@ -117,7 +119,7 @@ router.post('/signup', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  console.log("Signup api post called")
+  console.log("Login api post called")
   const username = req.body.username
   const password = req.body.password
   if (validateString(username) && (validateString(password))){
@@ -127,13 +129,33 @@ router.post('/login', (req, res) => {
       else {
         if (result.length!=1){ return returnInvalidUsernameOrPassword(res); }
         else {
+          var accessToken = jwt.sign({
+            data: username
+          }, SECRET, { expiresIn: 5 });
           console.log(result)
-          return res.json({message: 'One user found!'});
+          return res.json({message: 'One user found!', token: accessToken});
         }}
       });
   } else {
     return res.status(BAD_REQUEST).json({
        message: 'Username and password must be alphanumeric'
+     });
+   }
+
+});
+
+router.post('/verify', (req, res) => {
+  console.log("verify api post called")
+  const accessToken = req.body.token
+  if (accessToken){
+    jwt.verify(accessToken, SECRET, (err, decoded) => {
+      console.log(err)
+      console.log(decoded)
+      return res.json({message: 'Token ok'});
+    });
+  } else {
+    return res.status(BAD_REQUEST).json({
+       message: 'invalid access token'
      });
    }
 
