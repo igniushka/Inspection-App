@@ -130,7 +130,7 @@ router.post('/signup', (req, res) => {
 
 });
 
-async function updateToken(name, token){
+function updateToken(name, token){
   //delete existing token first
   var sql = "DELETE FROM token WHERE name = '" + name+"'";
   connection.query(sql, (err, result) => {
@@ -166,7 +166,7 @@ router.post('/login', (req, res) => {
           var accessToken = jwt.sign({
             data: username
           }, SECRET, { expiresIn: MINUTE });
-          updated = await updateToken(username, accessToken)
+          updated = updateToken(username, accessToken)
           if (updated) {
             console.log("token updated")
           return res.json({message: 'Success!', token: accessToken});
