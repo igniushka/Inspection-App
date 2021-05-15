@@ -68,6 +68,8 @@ router.post('/signup', function (req, res, next) {
 });
 
 app.use(router)
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 app.listen(port, function () {
   console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
 });
