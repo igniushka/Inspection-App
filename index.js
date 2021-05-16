@@ -191,7 +191,8 @@ function verifyToken(req, res, next){
            return returnInternalError(res)
           }else{
             if(result.length == 1){ 
-              result[0]
+              console.log(result[0])
+              next()
 
             } else returnInternalError(res)
           }
@@ -208,9 +209,8 @@ function verifyToken(req, res, next){
    }
 }
 
-router.post('/verify', (req, res) => {
-
-
+router.post('/verify', verifyToken, (req, res) => {
+  return  res.json({message: 'Success!'})
 });
 
 
