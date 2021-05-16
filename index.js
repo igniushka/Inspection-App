@@ -191,16 +191,19 @@ function verifyToken(req, res, next){
            return returnInternalError(res)
           }else{
             if(result.length == 1){ 
-              console.log(result[0])
-              next()
-
+              if (result[0].token == accessToken){
+                next()
+              } else { 
+                res.status(BAD_REQUEST).json({
+                message: 'invalid access token' });
+              }
             } else returnInternalError(res)
           }
         })
       }
-      console.log(err)
-      console.log(decoded)
-      return res.json({message: 'Token ok'});
+      // console.log(err)
+      // console.log(decoded)
+      // return res.json({message: 'Token ok'});
     });
   } else {
     return res.status(BAD_REQUEST).json({
