@@ -15,12 +15,17 @@ const INTERNAL_SERVER_ERROR = 500
 const MINUTE = 60
 const HALF_HOUR = 30 * MINUTE
 
+const HOST = "eu-cdbr-west-01.cleardb.com"
+const USER = "b06e98fcde28f0"
+const PASS = "cd51e4b0"
+const DATABASE = "heroku_05fce074f5dba05"
+
 
 var db_config = {
-  host: 'eu-cdbr-west-01.cleardb.com',
-    user: 'b06e98fcde28f0',
-    password: 'cd51e4b0',
-    database: 'heroku_05fce074f5dba05'
+  host: HOST,
+    user: USER,
+    password: PASS,
+    database: DATABASE
 };
 
 var connection
@@ -37,26 +42,39 @@ function handleDisconnect() {
     console.log('connected as id ' + connection.threadId);
     
     //drop existing tables first
-    connection.query("DROP TABLE user", function (err, result) {  
-        if (err){console.log("failed to delete user table")} else console.log("user table deleted");  
-    });  
-    connection.query("DROP TABLE token", function (err, result) {  
-        if (err){console.log("failed to delete token table")} else console.log("user table deleted");  
-    }); 
+    // connection.query("DROP TABLE user", function (err, result) {  
+    //     if (err){console.log("failed to delete user table")} else console.log("user table deleted");  
+    // });  
+
+    var sql = "SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'token')"
+
+    connection.query(sql, function (err, result) {  
+      if (err){console.log("failed to delete token table")} else console.log("check for token table result: ",result);  
+  }); 
+
+  var sql = "SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'user')"
+
+  connection.query(sql, function (err, result) {  
+    if (err){console.log("failed to delete token table")} else console.log("check for user table result: ",result);  
+}); 
+
+    // connection.query("DROP TABLE token", function (err, result) {  
+    //     if (err){console.log("failed to delete token table")} else console.log("user table deleted");  
+    // }); 
 
 
 
-    var sql = "CREATE TABLE user (name VARCHAR(255) PRIMARY KEY, password VARCHAR(255))";
-    connection.query(sql, function (err, result) {
-        if (err) throw err;
-        console.log("user table created");
-  });
+  //   var sql = "CREATE TABLE user (name VARCHAR(255) PRIMARY KEY, password VARCHAR(255))";
+  //   connection.query(sql, function (err, result) {
+  //       if (err) throw err;
+  //       console.log("user table created");
+  // });
 
-  var sql = "CREATE TABLE token (name VARCHAR(255) PRIMARY KEY, token VARCHAR(255))";
-  connection.query(sql, function (err, result) {
-      if (err) throw err;
-      console.log("token table created");
-});
+//   var sql = "CREATE TABLE token (name VARCHAR(255) PRIMARY KEY, token VARCHAR(255))";
+//   connection.query(sql, function (err, result) {
+//       if (err) throw err;
+//       console.log("token table created");
+// });
     
     
    
@@ -183,7 +201,7 @@ function verifyToken(req, res, next){
   if (accessToken){
     jwt.verify(accessToken, SECRET, (err, decoded) => {
       if(err){
-        res.status(UNAUTHORISED).json({message: 'Token expired, please log in again'})
+        return res.status(UNAUTHORISED).json({message: 'Token expired, please log in again'})
       }else{
         const name = decoded.data
         connection.query("SELECT * FROM token WHERE name = '" + name+"'", (err, result) => {
