@@ -41,45 +41,42 @@ function handleDisconnect() {
     
     console.log('connected as id ' + connection.threadId);
     
-    //drop existing tables first
-    // connection.query("DROP TABLE user", function (err, result) {  
-    //     if (err){console.log("failed to delete user table")} else console.log("user table deleted");  
-    // });  
 
 
-    var sql = "SELECT EXISTS( SELECT * FROM information_schema.tables WHERE table_schema = '"+DATABASE+"' AND table_name = 'token')"
-
+    var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'token')"
     connection.query(sql, function (err, result) {  
-      if (err){console.log("failed to delete token table")} else console.log("check for token table result: ",result);  
-  }); 
+      if (err){
+        console.log("failed to delete token table")
+      } else{
+        if (result[0].cnt!=1){
+          var sql = "CREATE TABLE token (name VARCHAR(255) PRIMARY KEY, token VARCHAR(255))";
+          connection.query(sql, function (err, result) {
+          if (err) throw err;
+             console.log("token table created");
+          });
+        } else {
+          console.log("token table already exists")
+        }
+      } 
+    });
 
   var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'user')"
-
   connection.query(sql, function (err, result) {  
-    if (err){console.log("failed to delete token table")} else console.log("check for user table result: ",result[0].cnt);  
-}); 
-
-    // connection.query("DROP TABLE token", function (err, result) {  
-    //     if (err){console.log("failed to delete token table")} else console.log("user table deleted");  
-    // }); 
-
-
-
-  //   var sql = "CREATE TABLE user (name VARCHAR(255) PRIMARY KEY, password VARCHAR(255))";
-  //   connection.query(sql, function (err, result) {
-  //       if (err) throw err;
-  //       console.log("user table created");
-  // });
-
-//   var sql = "CREATE TABLE token (name VARCHAR(255) PRIMARY KEY, token VARCHAR(255))";
-//   connection.query(sql, function (err, result) {
-//       if (err) throw err;
-//       console.log("token table created");
-// });
-    
-    
-   
-  });                                    
+    if (err){
+      console.log("failed to delete token table")
+    } else{
+      if (result[0].cnt!=1){
+        var sql = "CREATE TABLE user (name VARCHAR(255) PRIMARY KEY, password VARCHAR(255))";
+        connection.query(sql, function (err, result) {
+           if (err) throw err;
+           console.log("user table created");
+        });
+      } else {
+        console.log("user table already exists")
+      }
+    } 
+  }); 
+});                                    
                                          
   connection.on('error', function(err) {
     console.log('db error', err);
