@@ -53,10 +53,10 @@ function handleDisconnect() {
       if (err){console.log("failed to delete token table")} else console.log("check for token table result: ",result);  
   }); 
 
-  var sql = "SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'user')"
+  var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'user')"
 
   connection.query(sql, function (err, result) {  
-    if (err){console.log("failed to delete token table")} else console.log("check for user table result: ",result);  
+    if (err){console.log("failed to delete token table")} else console.log("check for user table result: ",result[0].cnt);  
 }); 
 
     // connection.query("DROP TABLE token", function (err, result) {  
