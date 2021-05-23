@@ -46,7 +46,8 @@ function handleDisconnect() {
     //     if (err){console.log("failed to delete user table")} else console.log("user table deleted");  
     // });  
 
-    var sql = "SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'token')"
+
+    var sql = "SELECT EXISTS( SELECT * FROM information_schema.tables WHERE table_schema = '"+DATABASE+"' AND table_name = 'token')"
 
     connection.query(sql, function (err, result) {  
       if (err){console.log("failed to delete token table")} else console.log("check for token table result: ",result);  
