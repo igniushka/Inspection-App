@@ -1,11 +1,8 @@
 const mysql = require("mysql");
-
-
 const HOST = "eu-cdbr-west-01.cleardb.com"
 const USER = "b06e98fcde28f0"
 const PASS = "cd51e4b0"
 const DATABASE = "heroku_05fce074f5dba05"
-
 
 var db_config = {
   host: HOST,
@@ -130,6 +127,26 @@ function handleDisconnect() {
         }
       } 
     });
+
+    var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'answer')"
+    connection.query(sql, function (err, result) {  
+      if (err){
+        console.log("An error occured while selecting number of answer tables")
+      } else{
+        if (result[0].cnt!=1){
+            var sql = "CREATE TABLE answer (id INT AUTO_INCREMENT PRIMARY KEY, questionId INT, answer VARCHAR(255), value INT,  FOREIGN KEY (questionId) REFERENCES question(id) ON DELETE CASCADE)";
+            connection.query(sql, function (err, result) {
+            if (err){
+              console.log(err)
+              throw err;
+            } 
+             console.log("answer table created");
+          });
+        } else {
+          console.log("answer table already exists")
+        }
+      } 
+    }); 
 
   var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'user')"
   connection.query(sql, function (err, result) {  
