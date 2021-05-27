@@ -164,13 +164,13 @@ router.post('/submitInspection', verifyToken, (req, res) => {
   connection.query(sql, function (err, result) {  
     if (err){
       console.log("An error occured while inserting inspection")
-    } else{
-    console.log(req.body)
-    return res.json({message: 'Success!'})
-    } 
+      return returnInternalError(res)
+    } else {
+      console.log(result)
+    }
   });
-});
 
+});
 
 
 app.use(router)
