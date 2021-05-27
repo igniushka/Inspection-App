@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 
+
 const HOST = "eu-cdbr-west-01.cleardb.com"
 const USER = "b06e98fcde28f0"
 const PASS = "cd51e4b0"
@@ -161,3 +162,4 @@ function handleDisconnect() {
   });
 }
 handleDisconnect()
+exports.connection = connection
