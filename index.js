@@ -1,11 +1,12 @@
-const database = require('./models/database')
-var connection = database.connection
 const express = require('express');
 const app = express();
 const router = express.Router();
 const port = process.env.PORT || 5000;
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+const database = require('./models/database')
+var connection = database.connection
+const getDate = require('./utils/date').sqlDate
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const SECRET = "A VERY SECRET SECRET"
@@ -157,7 +158,7 @@ router.post('/verify', verifyToken, (req, res) => {
 router.post('/submitInspection', verifyToken, (req, res) => {
   let inspectionInfo = req.body.inspectionInfo
   let inspection = req.body.inspectionInfo.inspection
-  let now = new Date()
+  let now = getDate()
   let sql = "INSERT INTO inspection (user, type, location, date) VALUES ('" + inspection.user + "', '"+ inspection.type + "', '"+ inspection.location + "', '"+  now  +"')";
   connection.query(sql, function (err, result) {  
     if (err){
