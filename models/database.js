@@ -160,9 +160,4 @@ function handleDisconnect() {
     }
   });
 }
-
-
-exports.getConnection = function () {
-    handleDisconnect();
-    return connection
-  }; 
+handleDisconnect()

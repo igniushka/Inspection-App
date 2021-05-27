@@ -14,14 +14,6 @@ const INTERNAL_SERVER_ERROR = 500
 const MINUTE = 60
 const HALF_HOUR = 30 * MINUTE
 
-
-
-var connection = database.getConnection()
-
-
-
-
-
 function returnInternalError(res){
   res.status(INTERNAL_SERVER_ERROR).json({
     message: 'An error occurred while processing request'
