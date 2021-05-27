@@ -9,12 +9,14 @@ var connection = database.connection
 const getDate = require('./utils/date').sqlDate
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const dateformat = require( 'dateformat';
 const SECRET = "A VERY SECRET SECRET"
 const BAD_REQUEST = 400
 const UNAUTHORISED = 401
 const INTERNAL_SERVER_ERROR = 500
 const MINUTE = 60
 const HALF_HOUR = 30 * MINUTE
+
 
 function returnInternalError(res){
   res.status(INTERNAL_SERVER_ERROR).json({
@@ -158,8 +160,8 @@ router.post('/verify', verifyToken, (req, res) => {
 router.post('/submitInspection', verifyToken, (req, res) => {
   let inspectionInfo = req.body.inspectionInfo
   let inspection = req.body.inspectionInfo.inspection
-  let now = getDate()
-  let sql = "INSERT INTO inspection (user, type, location, date) VALUES ('" + inspection.user + "', '"+ inspection.type + "', '"+ inspection.location + "', '"+  now  +"')";
+  let date = dateformat(new Date(), "yyyy-mm-dd HH:MM:ss" );
+  let sql = "INSERT INTO inspection (user, type, location, date) VALUES ('" + inspection.user + "', '"+ inspection.type + "', '"+ inspection.location + "', '"+  date  +"')";
   connection.query(sql, function (err, result) {  
     if (err){
       console.log("An error occured while inserting inspection")
