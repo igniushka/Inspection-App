@@ -313,7 +313,9 @@ router.post('/submitInspection', verifyToken, (req, res) => {
       return returnInternalError(res)
     } else {
         inspectionId = result.insertId
-        // inspectionInfo.
+        inspectionInfo.questions.forEach(question => {
+          console.log(question)
+        });
     }
   });
 
