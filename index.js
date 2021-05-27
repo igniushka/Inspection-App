@@ -340,8 +340,8 @@ router.post('/submitInspection', verifyToken, (req, res) => {
                   } else {
                     currentAnswerNo++
                     console.log("CCC")
-                    console.log(currentAnswerNo)
-                    console.log(answersCount)
+                    console.log(currentQuestionNo)
+                    console.log(questionsCount)
                     if (currentQuestionNo == questionsCount && currentAnswerNo ==  answersCount){
                       console.log("All data inserted")
                       return res.json({message: 'Inspection inserted!'});
