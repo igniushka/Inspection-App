@@ -316,7 +316,6 @@ router.post('/submitInspection', verifyToken, (req, res) => {
         inspectionInfo.questions.forEach(questionInfo => {
           // console.log(questionInfo)
           console.log("BBB")
-          currentQuestionNo++
           let question = questionInfo.question
           let sql = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
           connection.query(sql, (err, questionResult) => {  
@@ -326,11 +325,11 @@ router.post('/submitInspection', verifyToken, (req, res) => {
                 // return returnInternalError(res)
               })        
             } else {
+            currentQuestionNo++
              let questionId = questionResult.insertId
              let answersCount = questionInfo.answer.length
              var currentAnswerNo = 0
               questionInfo.answer.forEach(answer =>{
-                currentAnswerNo++
                 let sql = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
                 connection.query(sql, (err) => {  
                   if (err){
@@ -339,6 +338,7 @@ router.post('/submitInspection', verifyToken, (req, res) => {
                       // return returnInternalError(res)
                     })    
                   } else {
+                    currentAnswerNo++
                     console.log("CCC")
                     if (currentQuestionNo == questionsCount && currentAnswerNo ==  answersCount){
                       console.log("All data inserted")
@@ -351,8 +351,6 @@ router.post('/submitInspection', verifyToken, (req, res) => {
 
             }
           })
-
-
         });
     }
   });
