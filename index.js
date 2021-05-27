@@ -6,10 +6,9 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 const database = require('./models/database')
 var connection = database.connection
-const getDate = require('./utils/date').sqlDate
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const dateformat = require( 'dateformat';
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const dateformat = require( 'dateformat')
 const SECRET = "A VERY SECRET SECRET"
 const BAD_REQUEST = 400
 const UNAUTHORISED = 401
