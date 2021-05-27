@@ -158,15 +158,18 @@ router.post('/verify', verifyToken, (req, res) => {
 
 router.post('/submitInspection', verifyToken, (req, res) => {
   let inspectionInfo = req.body.inspectionInfo
-  let inspection = req.body.inspectionInfo.inspection
+  console.log(inspectionInfo)
+  let inspection = inspectionInfo.inspection
+  var inspectionId = -1 //to be returned upon insert to SQL
   let date = moment().format( 'YYYY-MM-DD  HH:mm:ss.000' );
   let sql = "INSERT INTO inspection (user, type, location, date) VALUES ('" + inspection.user + "', '"+ inspection.type + "', '"+ inspection.location + "', '"+  date  +"')";
-  connection.query(sql, function (err, result) {  
+  connection.query(sql, (err, result) => {  
     if (err){
       console.log("An error occured while inserting inspection")
       return returnInternalError(res)
     } else {
-      console.log(result)
+        inspectionId = result.insertId
+        inspectionInfo.
     }
   });
 
