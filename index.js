@@ -325,9 +325,9 @@ router.post('/submitInspection', verifyToken, (req, res) => {
               })        
             } else {
              let questionId = questionResult.insertId
-             let answersCount = questionInfo.answers.length
+             let answersCount = questionInfo.answer.length
              var currentAnswerNo = 0
-              questionInfo.answers.forEach(answer =>{
+              questionInfo.answer.forEach(answer =>{
                 currentAnswerNo++
                 let sql = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
                 connection.query(sql, (err) => {  
