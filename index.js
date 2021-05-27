@@ -46,7 +46,7 @@ function handleDisconnect() {
     var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'token')"
     connection.query(sql, function (err, result) {  
       if (err){
-        console.log("failed to delete token table")
+        console.log("An error occured while selecting number of token tables")
       } else{
         if (result[0].cnt!=1){
           var sql = "CREATE TABLE token (name VARCHAR(255) PRIMARY KEY, token VARCHAR(255))";
@@ -60,10 +60,28 @@ function handleDisconnect() {
       } 
     });
 
+  
+    var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'inspection')"
+    connection.query(sql, function (err, result) {  
+      if (err){
+        console.log("An error occured while selecting number of inspection tables")
+      } else{
+        if (result[0].cnt!=1){
+          var sql = "CREATE TABLE inspection (id INT AUTO_INCREMENT PRIMARY KEY, user VARCHAR(255), type VARCHAR(255), location VARCHAR(255), date DATETIME)";
+          connection.query(sql, function (err, result) {
+          if (err) throw err;
+             console.log("inspection table created");
+          });
+        } else {
+          console.log("inspection table already exists")
+        }
+      } 
+    });
+
   var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'user')"
   connection.query(sql, function (err, result) {  
     if (err){
-      console.log("failed to delete token table")
+      console.log("An error occured while selecting number of user tables")
     } else{
       if (result[0].cnt!=1){
         var sql = "CREATE TABLE user (name VARCHAR(255) PRIMARY KEY, password VARCHAR(255))";
@@ -208,7 +226,6 @@ function verifyToken(req, res, next){
           }else{
             if(result.length == 1){ 
               if (result[0].token == accessToken){
-                req.user = name
                 next()
               } else { 
                 res.status(BAD_REQUEST).json({
@@ -218,9 +235,6 @@ function verifyToken(req, res, next){
           }
         })
       }
-      // console.log(err)
-      // console.log(decoded)
-      // return res.json({message: 'Token ok'});
     });
   } else {
     return res.status(BAD_REQUEST).json({
@@ -234,8 +248,9 @@ router.post('/verify', verifyToken, (req, res) => {
 });
 
 router.post('/submitInspection', verifyToken, (req, res) => {
+
   console.log(req.body)
-  return  res.json({message: 'Success!'})
+  return res.json({message: 'Success!'})
 });
 
 
