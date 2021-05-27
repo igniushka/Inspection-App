@@ -17,8 +17,6 @@ const MINUTE = 60
 const HALF_HOUR = 30 * MINUTE
 
 
-
-
 const mysql = require("mysql");
 const HOST = "eu-cdbr-west-01.cleardb.com"
 const USER = "b06e98fcde28f0"
@@ -304,7 +302,6 @@ router.post('/submitInspection', verifyToken, (req, res) => {
   let inspectionInfo = req.body.inspectionInfo
   console.log(inspectionInfo)
   let inspection = inspectionInfo.inspection
-  var inspectionId = -1 //to be returned upon insert to SQL
   let date = moment().format( 'YYYY-MM-DD  HH:mm:ss.000' );
   let sql = "INSERT INTO inspection (user, type, location, date) VALUES ('" + inspection.user + "', '"+ inspection.type + "', '"+ inspection.location + "', '"+  date  +"')";
   connection.query(sql, (err, result) => {  
@@ -312,9 +309,46 @@ router.post('/submitInspection', verifyToken, (req, res) => {
       console.log("An error occured while inserting inspection")
       return returnInternalError(res)
     } else {
-        inspectionId = result.insertId
-        inspectionInfo.questions.forEach(question => {
-          console.log(question)
+        let inspectionId = result.insertId
+        questionsCount = inspectionInfo.questions.length
+        var currentQuestionNo = 0
+        inspectionInfo.questions.forEach(questionInfo => {
+          console.log(questionInfo)
+          currentQuestionNo++
+          let question = questionInfo.question
+          let sql = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
+          connection.query(sql, (err, questionResult) => {  
+            if (err){
+              console.log("An error occured while inserting question") //if question failed to insert delete the inspection
+              connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
+                return returnInternalError(res)
+              })        
+            } else {
+             let questionId = questionResult.insertId
+             let answersCount = questionInfo.answers.length
+             var currentAnswerNo = 0
+              questionInfo.answers.forEach(answer =>{
+                currentAnswerNo++
+                let sql = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
+                connection.query(sql, (err) => {  
+                  if (err){
+                    console.log("An error occured while inserting answer") //if question failed to insert delete the inspection
+                    connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
+                      return returnInternalError(res)
+                    })    
+                  } else {
+                    if (currentQuestionNo == questionsCount && currentAnswerNo ==  answersCount){
+                      return res.json({message: 'Inspection inserted!'});
+                    }
+                  }
+                })    
+
+              })
+
+            }
+          })
+
+
         });
     }
   });
