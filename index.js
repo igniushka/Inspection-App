@@ -169,7 +169,7 @@ router.post('/submitInspection', verifyToken, (req, res) => {
       return returnInternalError(res)
     } else {
         inspectionId = result.insertId
-        inspectionInfo.
+        // inspectionInfo.
     }
   });
 
