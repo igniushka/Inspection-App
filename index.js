@@ -8,7 +8,7 @@ const database = require('./models/database')
 var connection = database.connection
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const dateformat = require( 'dateformat')
+const moment= require( 'moment' )
 const SECRET = "A VERY SECRET SECRET"
 const BAD_REQUEST = 400
 const UNAUTHORISED = 401
@@ -159,7 +159,7 @@ router.post('/verify', verifyToken, (req, res) => {
 router.post('/submitInspection', verifyToken, (req, res) => {
   let inspectionInfo = req.body.inspectionInfo
   let inspection = req.body.inspectionInfo.inspection
-  let date = dateformat(new Date(), "yyyy-mm-dd HH:MM:ss" );
+  let date = moment().format( 'YYYY-MM-DD  HH:mm:ss.000' );
   let sql = "INSERT INTO inspection (user, type, location, date) VALUES ('" + inspection.user + "', '"+ inspection.type + "', '"+ inspection.location + "', '"+  date  +"')";
   connection.query(sql, function (err, result) {  
     if (err){
