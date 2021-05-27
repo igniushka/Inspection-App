@@ -208,6 +208,7 @@ function verifyToken(req, res, next){
           }else{
             if(result.length == 1){ 
               if (result[0].token == accessToken){
+                req.user = name
                 next()
               } else { 
                 res.status(BAD_REQUEST).json({
