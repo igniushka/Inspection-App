@@ -309,11 +309,13 @@ router.post('/submitInspection', verifyToken, (req, res) => {
       console.log("An error occured while inserting inspection")
       return returnInternalError(res)
     } else {
+        console.log("AAA")
         let inspectionId = result.insertId
         questionsCount = inspectionInfo.questions.length
         var currentQuestionNo = 0
         inspectionInfo.questions.forEach(questionInfo => {
-          console.log(questionInfo)
+          // console.log(questionInfo)
+          console.log("BBB")
           currentQuestionNo++
           let question = questionInfo.question
           let sql = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
@@ -321,7 +323,7 @@ router.post('/submitInspection', verifyToken, (req, res) => {
             if (err){
               console.log("An error occured while inserting question") //if question failed to insert delete the inspection
               connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
-                return returnInternalError(res)
+                // return returnInternalError(res)
               })        
             } else {
              let questionId = questionResult.insertId
@@ -334,10 +336,12 @@ router.post('/submitInspection', verifyToken, (req, res) => {
                   if (err){
                     console.log("An error occured while inserting answer") //if question failed to insert delete the inspection
                     connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
-                      return returnInternalError(res)
+                      // return returnInternalError(res)
                     })    
                   } else {
+                    console.log("CCC")
                     if (currentQuestionNo == questionsCount && currentAnswerNo ==  answersCount){
+                      console.log("All data inserted")
                       return res.json({message: 'Inspection inserted!'});
                     }
                   }
