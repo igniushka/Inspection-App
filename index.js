@@ -232,6 +232,11 @@ router.post('/verify', verifyToken, (req, res) => {
   return  res.json({message: 'Success!'})
 });
 
+router.post('/submitInspection', verifyToken, (req, res) => {
+  console.log(req.body)
+  return  res.json({message: 'Success!'})
+});
+
 
 
 app.use(router)
