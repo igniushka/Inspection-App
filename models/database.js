@@ -87,47 +87,6 @@ function handleDisconnect() {
       } 
     });
 
-    var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'question')"
-    connection.query(sql, function (err, result) {  
-      if (err){
-        console.log("An error occured while selecting number of question tables")
-      } else{
-        if (result[0].cnt!=1){
-          var sql = "CREATE TABLE question (id INT AUTO_INCREMENT PRIMARY KEY, inspectionId INT, question VARCHAR(255), notApplicable BOOLEAN,  FOREIGN KEY (inspectionId) REFERENCES inspection(id) ON DELETE CASCADE)";
-          connection.query(sql, function (err, result) {
-          if (err){
-              console.log(err)
-              throw err;
-            } 
-             console.log("question table created");
-          });
-        } else {
-          console.log("question table already exists")
-        }
-      } 
-    });
-
-
-    var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'question')"
-    connection.query(sql, function (err, result) {  
-      if (err){
-        console.log("An error occured while selecting number of question tables")
-      } else{
-        if (result[0].cnt!=1){
-          var sql = "CREATE TABLE question (id INT AUTO_INCREMENT PRIMARY KEY, inspectionId INT, question VARCHAR(255), notApplicable BOOLEAN,  FOREIGN KEY (inspectionId) REFERENCES inspection(id) ON DELETE CASCADE)";
-          connection.query(sql, function (err, result) {
-          if (err){
-              console.log(err)
-              throw err;
-            } 
-             console.log("question table created");
-          });
-        } else {
-          console.log("question table already exists")
-        }
-      } 
-    });
-
     var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'answer')"
     connection.query(sql, function (err, result) {  
       if (err){
