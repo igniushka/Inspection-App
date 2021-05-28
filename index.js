@@ -370,7 +370,8 @@ router.post('/getInspectionInfo', verifyToken, async (req, res) => {
   const db = makeDb()
   try{
     const inspectionSQL = "SELECT * FROM inspection WHERE id = '" + inspectionId +"'"
-    var inspection = await db.query(inspectionSQL)
+    const inspectionList = await db.query(inspectionSQL)
+    var inspection = inspectionList[0]
     const localInspectionId = inspection.id
     const questionSQL = "SELECT * FROM question WHERE inspectionId = '" + localInspectionId +"'"
     var questions = await db.query(questionSQL)
