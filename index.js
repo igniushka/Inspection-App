@@ -343,6 +343,7 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
 })
 
 router.post('/getUserInspections', verifyToken, async (req, res) => {
+  const accessToken = req.body.token
   const db = makeDb()
   jwt.verify(accessToken, SECRET, async (err, username) => {
     const sql = "SELECT * FROM inspection WHERE user = '" + username +"'"
