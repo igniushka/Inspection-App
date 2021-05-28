@@ -308,13 +308,22 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
     const inspectionResult = await connection.query(sql)
     const inspectionId = inspectionResult.insertId
     inspectionInfo.questions.forEach(questionInfo => {
+      try{
       const question = questionInfo.question
       const questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
       const questionResult = await connection.query(questionSQL)
       const questionId = questionResult.insertId
+      }catch(err){
+
+      }
       questionInfo.answer.forEach(answer =>{
+        try{
+          
         const answerSQL = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
         await connection.query(answerSQL)
+        }catch(err){
+          
+        }
       })
     })
     return res.json({message: 'Inspection inserted!'})
