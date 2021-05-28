@@ -351,7 +351,10 @@ router.post('/getUserInspections', verifyToken, async (req, res) => {
     try{
     result =  await db.query(sql)
     console.log(result)
-    return res.json({message: 'Success!'})
+    return res.json({
+      message: 'Success!', 
+      inspections : result
+    })
     } catch (err) {
       console.log("An error occured while getting user inspections")
       returnInternalError(res)
