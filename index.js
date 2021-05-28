@@ -323,27 +323,28 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
   try{
     const inspectionResult = await db.query(sql)
     inspectionId = inspectionResult.insertId
-    await inspectionInfo.questions.forEach( async questionInfo => {
+    for (questionInfo of inspectionInfo.questions){
       console.log("AAA")
       const question = questionInfo.question
       const questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
       const questionResult = await db.query(questionSQL)
       console.log("BBB")
       questionId = questionResult.insertId
-      await questionInfo.answer.forEach( async answer =>{
+      for (answer of questionInfo.answer) {
         const answerSQL = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
         await db.query(answerSQL)
         console.log("CCC")
-      })
-    })
+      }
+    }
   } catch (err){
     console.log("An error occured while inserting inspection")
     connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
     return returnInternalError(res)
     })  
+  } finally {
+    console.log("CLOSING")
+    await db.close()
   }
-  console.log("CLOSING")
-  // await db.close()
     return res.json({message: 'Inspection inserted!'})
 })
 
