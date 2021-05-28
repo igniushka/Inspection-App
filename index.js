@@ -16,8 +16,8 @@ const INTERNAL_SERVER_ERROR = 500
 const MINUTE = 60
 const HALF_HOUR = 30 * MINUTE
 
-
-const mysql = require("mysql");
+const util = require( 'util' )
+const mysql = require("mysql")
 const HOST = "eu-cdbr-west-01.cleardb.com"
 const USER = "b06e98fcde28f0"
 const PASS = "cd51e4b0"
@@ -157,6 +157,19 @@ function handleDisconnect() {
   });
 }
 handleDisconnect()
+
+function makeDb() {
+  const connection = mysql.createConnection( db_config );
+  return {
+    query( sql, args ) {
+      return util.promisify( connection.query )
+        .call( connection, sql, args );
+    },
+    close() {
+      return util.promisify( connection.end ).call( connection );
+    }
+  };
+}
 
 
 function returnInternalError(res){
@@ -299,6 +312,7 @@ router.post('/verify', verifyToken, (req, res) => {
 });
 
 router.post('/submitInspection', verifyToken, async (req, res) => {
+  const db = makeDb()
   let inspectionInfo = req.body.inspectionInfo
   console.log(inspectionInfo)
   let inspection = inspectionInfo.inspection
@@ -307,35 +321,27 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
   let date = moment().format( 'YYYY-MM-DD  HH:mm:ss.000' );
   let sql = "INSERT INTO inspection (user, type, location, date) VALUES ('" + inspection.user + "', '"+ inspection.type + "', '"+ inspection.location + "', '"+  date  +"')";
   try{
-    const inspectionResult = await connection.query(sql)
+    const inspectionResult = await db.query(sql)
     inspectionId = inspectionResult.insertId
+    inspectionInfo.questions.forEach(questionInfo => {
+      const question = questionInfo.question
+      const questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
+      const questionResult = await db.query(questionSQL)
+      questionId = questionResult.insertId
+      questionInfo.answer.forEach(answer =>{
+        const answerSQL = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
+        await db.query(answerSQL)
+      })
+    })
   } catch (err){
     console.log("An error occured while inserting inspection")
     connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
-      return returnInternalError(res)
+    return returnInternalError(res)
     })  
+  } finally {
+    await db.close()
   }
-    inspectionInfo.questions.forEach(questionInfo => {
-      try{
-      const question = questionInfo.question
-      const questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
-      const questionResult = await connection.query(questionSQL)
-      questionId = questionResult.insertId
-      }catch(err){
-
-      }
-      questionInfo.answer.forEach(answer =>{
-        try{
-          
-        const answerSQL = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
-        await connection.query(answerSQL)
-        }catch(err){
-
-        }
-      })
-    })
     return res.json({message: 'Inspection inserted!'})
-
 })
 
 
