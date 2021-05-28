@@ -307,9 +307,7 @@ function verifyToken(req, res, next){
    }
 }
 
-router.post('/verify', verifyToken, (req, res) => {
-  return  res.json({message: 'Success!'})
-});
+
 
 router.post('/submitInspection', verifyToken, async (req, res) => {
   const db = makeDb()
@@ -324,16 +322,13 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
     const inspectionResult = await db.query(sql)
     inspectionId = inspectionResult.insertId
     for (questionInfo of inspectionInfo.questions){
-      console.log("AAA")
       const question = questionInfo.question
       const questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
       const questionResult = await db.query(questionSQL)
-      console.log("BBB")
       questionId = questionResult.insertId
       for (answer of questionInfo.answer) {
         const answerSQL = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
         await db.query(answerSQL)
-        console.log("CCC")
       }
     }
   } catch (err){
@@ -342,10 +337,26 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
     return returnInternalError(res)
     })  
   } finally {
-    console.log("CLOSING")
     await db.close()
   }
     return res.json({message: 'Inspection inserted!'})
+})
+
+router.post('/getUserInspections', verifyToken, async (req, res) => {
+  const db = makeDb()
+  jwt.verify(accessToken, SECRET, (err, username) => {
+    const sql = "SELECT * FROM inspection WHERE user = '" + username +"'"
+    try{
+    result =  await db.query(sql)
+    console.log(result)
+    return res.json({message: 'Success!'})
+    } catch (err) {
+      console.log("An error occured while getting user inspections")
+      returnInternalError(res)
+    } finally {
+      await db.close()
+    }
+  })
 })
 
 
