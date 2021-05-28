@@ -343,7 +343,7 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
     })  
   }
   console.log("CLOSING")
-  await db.close()
+  // await db.close()
     return res.json({message: 'Inspection inserted!'})
 })
 
