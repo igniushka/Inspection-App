@@ -323,14 +323,14 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
   try{
     const inspectionResult = await db.query(sql)
     inspectionId = inspectionResult.insertId
-    inspectionInfo.questions.forEach( async questionInfo => {
+    await inspectionInfo.questions.forEach( async questionInfo => {
       console.log("AAA")
       const question = questionInfo.question
       const questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
       const questionResult = await db.query(questionSQL)
       console.log("BBB")
       questionId = questionResult.insertId
-      questionInfo.answer.forEach( async answer =>{
+      await questionInfo.answer.forEach( async answer =>{
         const answerSQL = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
         await db.query(answerSQL)
         console.log("CCC")
