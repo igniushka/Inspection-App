@@ -298,7 +298,7 @@ router.post('/verify', verifyToken, (req, res) => {
   return  res.json({message: 'Success!'})
 });
 
-router.post('/submitInspection', verifyToken, (req, res) => {
+router.post('/submitInspection', verifyToken, async (req, res) => {
   let inspectionInfo = req.body.inspectionInfo
   console.log(inspectionInfo)
   let inspection = inspectionInfo.inspection
