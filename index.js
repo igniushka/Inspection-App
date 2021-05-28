@@ -323,10 +323,10 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
     inspectionId = inspectionResult.insertId
     for (questionInfo of inspectionInfo.questions){
       var na = 1
+      const question = questionInfo.question
       if (question.notApplicable == false) {
         na =0
       }
-      const question = questionInfo.question
       const questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ na +"')";
       const questionResult = await db.query(questionSQL)
       questionId = questionResult.insertId
