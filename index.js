@@ -322,17 +322,17 @@ router.post('/submitInspection', verifyToken, async (req, res) => {
   let sql = "INSERT INTO inspection (user, type, location, date) VALUES ('" + inspection.user + "', '"+ inspection.type + "', '"+ inspection.location + "', '"+  date  +"')";
   try{
     const inspectionResult = await db.query(sql)
-    inspectionId = inspectionResult.insertId
-    inspectionInfo.questions.forEach(questionInfo => {
-      const question = questionInfo.question
-      const questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
-      const questionResult = await db.query(questionSQL)
-      questionId = questionResult.insertId
-      questionInfo.answer.forEach(answer =>{
-        const answerSQL = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
-        await db.query(answerSQL)
-      })
-    })
+    // inspectionId = inspectionResult.insertId
+    // inspectionInfo.questions.forEach(questionInfo => {
+    //   const question = questionInfo.question
+    //   const questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
+    //   const questionResult = await db.query(questionSQL)
+    //   questionId = questionResult.insertId
+    //   questionInfo.answer.forEach(answer =>{
+    //     const answerSQL = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
+    //     await db.query(answerSQL)
+    //   })
+    // })
   } catch (err){
     console.log("An error occured while inserting inspection")
     connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
