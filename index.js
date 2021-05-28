@@ -350,7 +350,6 @@ router.post('/getUserInspections', verifyToken, async (req, res) => {
     const sql = "SELECT * FROM inspection WHERE user = '" + username +"'"
     try{
     result =  await db.query(sql)
-    console.log(result)
     return res.json({
       message: 'Success!', 
       inspections : result
@@ -367,6 +366,7 @@ router.post('/getUserInspections', verifyToken, async (req, res) => {
 
 router.post('/getInspectionInfo', verifyToken, async (req, res) => {
   const inspectionId = req.body.inspectionId
+  console.log(inspectionId)
   const db = makeDb()
   try{
     const inspectionSQL = "SELECT * FROM inspection WHERE id = '" + inspectionId +"'"
