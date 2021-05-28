@@ -14,7 +14,7 @@ const BAD_REQUEST = 400
 const UNAUTHORISED = 401
 const INTERNAL_SERVER_ERROR = 500
 const MINUTE = 60
-const HALF_HOUR = 30 * MINUTE
+const FIFTEEN_MINUTES = 15 * MINUTE
 
 const util = require( 'util' )
 const mysql = require("mysql")
@@ -249,7 +249,7 @@ router.post('/login', (req, res) => {
             } else {
               var accessToken = jwt.sign({
                 data: username
-              }, SECRET, { expiresIn: MINUTE });
+              }, SECRET, { expiresIn: FIFTEEN_MINUTES });
                 //delete existing token first
                 connection.query("DELETE FROM token WHERE name = '" + username+"'", (ignore) =>{
                   //insert new token
