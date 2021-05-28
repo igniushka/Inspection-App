@@ -365,6 +365,37 @@ router.post('/getUserInspections', verifyToken, async (req, res) => {
 })
 
 
+router.post('/getInspectionInfo', verifyToken, async (req, res) => {
+  const inspectionId = req.body.inspectionId
+  const db = makeDb()
+  try{
+    const inspectionSQL = "SELECT * FROM inspection WHERE id = '" + inspectionId +"'"
+    const inspection = await db.query(inspectionSQL)[0]
+    console.log(inspection)
+    const localInspectionId = inspection.id
+    const questionSQL = "SELECT * FROM question WHERE inspectionId = '" + localInspectionId +"'"
+    var questions = await db.query(questionSQL)
+    for (i = 0; i < questions.length; i++){
+      const questionId = questions[i].id
+      const answerSQL = "SELECT * FROM answer WHERE questionId = '" + questionId +"'"
+      const answers = await db.query(answerSQL)
+      questions[i].answers = answers
+    }
+    inspection.questions = questions
+    return res.json({
+      message: 'Inspection retrieved', 
+      inspection : inspection
+    })
+
+    } catch (err) {
+      console.log("An error occured while getting user inspections")
+      returnInternalError(res)
+    } finally {
+      await db.close()
+    }
+})
+
+
 app.use(router)
 app.listen(port, function () {
   console.log(`Server running on port ${port}, https://investigation-server.herokuapp.com/:${port}`);
