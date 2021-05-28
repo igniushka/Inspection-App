@@ -191,36 +191,32 @@ if (input){
 } else {return false}
 }
 
-router.post('/signup', (req, res) => {
+router.post('/signup', async (req, res) => {
   console.log("Signup api post called")
   const username = req.body.username
   const password = req.body.password
   if (validateString(username) && (validateString(password))){
     //check if username exist in the database
+    const db = makeDb()
     var sql = "SELECT name FROM user WHERE name = '" + username+"'";
-    connection.query(sql, function (err, result) {
-      if (err) {return returnInternalError(res)}
-      else {
-        console.log(result)
-        console.log(result.length)
-        if (result.length == 0){
-              //hash the password
-             bcrypt.hash(password, 5).then(hash => {
-              var sql = "INSERT INTO user (name, password) VALUES ('" + username + "', '"+ hash +"')";
-              connection.query(sql, function (err, result) {
-              if (err) {return returnInternalError(res)}
-              else { return res.json({message: 'User created!'}); }
-                });
-               }) .catch(err =>{ return returnInternalError(res)}) 
+    try{
+      result = await db.query(sql)
+      if (result.length == 0){
+        //hash the password
+       bcrypt.hash(password, 5).then(async hash => {
+        var sql = "INSERT INTO user (name, password) VALUES ('" + username + "', '"+ hash +"')";
+        await db.query(sql)
+        return res.json({message: 'User created!'})
+         }) .catch(err =>{ return returnInternalError(res)}) 
 
-        } else {
-          return res.status(BAD_REQUEST).json({
-            message: 'Choose a different Username'
-          });
-        }
-      }
-});
-   
+  } else {
+    return res.status(BAD_REQUEST).json({
+      message: 'Choose a different Username'
+    });
+  }
+  } catch(err){
+      return returnInternalError(res)
+    }
   } else {
    return res.status(BAD_REQUEST).json({
       message: 'Username and password must be alphanumeric'
