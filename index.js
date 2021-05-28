@@ -304,60 +304,83 @@ router.post('/submitInspection', verifyToken, (req, res) => {
   let inspection = inspectionInfo.inspection
   let date = moment().format( 'YYYY-MM-DD  HH:mm:ss.000' );
   let sql = "INSERT INTO inspection (user, type, location, date) VALUES ('" + inspection.user + "', '"+ inspection.type + "', '"+ inspection.location + "', '"+  date  +"')";
-  connection.query(sql, (err, result) => {  
-    if (err){
-      console.log("An error occured while inserting inspection")
+  try{
+    const inspectionResult = await connection.query(sql)
+    const inspectionId = inspectionResult.insertId
+    inspectionInfo.questions.forEach(questionInfo => {
+      let question = questionInfo.question
+      let questionSQL = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
+      let questionResult = await connection.query(questionSQL)
+      let questionId = questionResult.insertId
+      questionInfo.answer.forEach(answer =>{
+        let answerSQL = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
+        await connection.query(answerSQL)
+      })
+    })
+    return res.json({message: 'Inspection inserted!'})
+  } catch (err){
+    console.log("An error occured while inserting inspection")
+    connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
       return returnInternalError(res)
-    } else {
-        console.log("AAA")
-        let inspectionId = result.insertId
-        questionsCount = inspectionInfo.questions.length
-        var currentQuestionNo = 0
-        inspectionInfo.questions.forEach(questionInfo => {
-          // console.log(questionInfo)
-          console.log("BBB")
-          let question = questionInfo.question
-          let sql = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
-          connection.query(sql, (err, questionResult) => {  
-            if (err){
-              console.log("An error occured while inserting question") //if question failed to insert delete the inspection
-              connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
-                // return returnInternalError(res)
-              })        
-            } else {
-            currentQuestionNo++
-             let questionId = questionResult.insertId
-             let answersCount = questionInfo.answer.length
-             var currentAnswerNo = 0
-              questionInfo.answer.forEach(answer =>{
-                let sql = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
-                connection.query(sql, (err) => {  
-                  if (err){
-                    console.log("An error occured while inserting answer") //if question failed to insert delete the inspection
-                    connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
-                      // return returnInternalError(res)
-                    })    
-                  } else {
-                    currentAnswerNo++
-                    console.log("CCC")
-                    console.log(currentQuestionNo)
-                    console.log(questionsCount)
-                    if (currentQuestionNo == questionsCount && currentAnswerNo ==  answersCount){
-                      console.log("All data inserted")
-                      return res.json({message: 'Inspection inserted!'});
-                    }
-                  }
-                })    
+    })  
+  }
+})
 
-              })
 
-            }
-          })
-        });
-    }
-  });
+//   connection.query(sql, (err, result) => {  
+//     if (err){
+//       console.log("An error occured while inserting inspection")
+//       return returnInternalError(res)
+//     } else {
+//         console.log("AAA")
+//         let inspectionId = result.insertId
+//         questionsCount = inspectionInfo.questions.length
+//         var currentQuestionNo = 0
+//         inspectionInfo.questions.forEach(questionInfo => {
+//           // console.log(questionInfo)
+//           console.log("BBB")
+//           let question = questionInfo.question
+//           let sql = "INSERT INTO question (inspectionId, question, notApplicable) VALUES ('" + inspectionId + "', '"+ question.question + "', '"+ question.notApplicable +"')";
+//           connection.query(sql, (err, questionResult) => {  
+//             if (err){
+//               console.log("An error occured while inserting question") //if question failed to insert delete the inspection
+//               connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
+//                 // return returnInternalError(res)
+//               })        
+//             } else {
+//             currentQuestionNo++
+//              let questionId = questionResult.insertId
+//              let answersCount = questionInfo.answer.length
+//              var currentAnswerNo = 0
+//               questionInfo.answer.forEach(answer =>{
+//                 let sql = "INSERT INTO answer (questionId, answer, value) VALUES ('" + questionId + "', '"+ answer.answer + "', '"+ answer.value +"')";
+//                 connection.query(sql, (err) => {  
+//                   if (err){
+//                     console.log("An error occured while inserting answer") //if question failed to insert delete the inspection
+//                     connection.query("DELETE FROM inspection WHERE id = '" + inspectionId+"'", (ignore) =>{
+//                       // return returnInternalError(res)
+//                     })    
+//                   } else {
+//                     currentAnswerNo++
+//                     console.log("CCC")
+//                     console.log(currentQuestionNo)
+//                     console.log(questionsCount)
+//                     if (currentQuestionNo == questionsCount && currentAnswerNo ==  answersCount){
+//                       console.log("All data inserted")
+//                       return res.json({message: 'Inspection inserted!'});
+//                     }
+//                   }
+//                 })    
 
-});
+//               })
+
+//             }
+//           })
+//         });
+//     }
+//   });
+
+// });
 
 
 app.use(router)
