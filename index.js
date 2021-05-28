@@ -370,8 +370,7 @@ router.post('/getInspectionInfo', verifyToken, async (req, res) => {
   const db = makeDb()
   try{
     const inspectionSQL = "SELECT * FROM inspection WHERE id = '" + inspectionId +"'"
-    const inspection = await db.query(inspectionSQL)
-    console.log(inspection)
+    var inspection = await db.query(inspectionSQL)
     const localInspectionId = inspection.id
     const questionSQL = "SELECT * FROM question WHERE inspectionId = '" + localInspectionId +"'"
     var questions = await db.query(questionSQL)
@@ -382,6 +381,7 @@ router.post('/getInspectionInfo', verifyToken, async (req, res) => {
       questions[i].answers = answers
     }
     inspection.questions = questions
+    console.log(inspection)
     return res.json({
       message: 'Inspection retrieved', 
       inspection : inspection
