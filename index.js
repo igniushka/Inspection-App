@@ -217,6 +217,9 @@ router.post('/signup', async (req, res) => {
   } catch(err){
       return returnInternalError(res)
     }
+    finally{
+      await db.close()
+    }
   } else {
    return res.status(BAD_REQUEST).json({
       message: 'Username and password must be alphanumeric'
