@@ -375,12 +375,14 @@ router.post('/getInspectionInfo', verifyToken, async (req, res) => {
     const localInspectionId = inspection.id
     const questionSQL = "SELECT * FROM question WHERE inspectionId = '" + localInspectionId +"'"
     var questions = await db.query(questionSQL)
+    console.log(questions)
     for (i = 0; i < questions.length; i++){
       const questionId = questions[i].id
       const answerSQL = "SELECT * FROM answer WHERE questionId = '" + questionId +"'"
       const answers = await db.query(answerSQL)
       questions[i].answers = answers
     }
+    console.log(questions[0])
     inspection.questions = questions
     console.log(inspection)
     return res.json({
