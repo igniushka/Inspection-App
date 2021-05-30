@@ -42,8 +42,26 @@ function handleDisconnect() {
     }   
     
     console.log('connected as id ' + connection.threadId);
-    
 
+    var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'user')"
+    connection.query(sql, function (err, result) {  
+      if (err){
+        console.log("An error occured while selecting number of user tables")
+      } else{
+        if (result[0].cnt!=1){
+          var sql = "CREATE TABLE user (name VARCHAR(255) PRIMARY KEY, password VARCHAR(255))";
+          connection.query(sql, function (err, result) {
+            if (err){
+              console.log(err)
+              throw err;
+            } 
+             console.log("user table created");
+          });
+        } else {
+          console.log("user table already exists")
+        }
+      } 
+    });    
 
     var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'token')"
     connection.query(sql, function (err, result) {  
@@ -126,25 +144,6 @@ function handleDisconnect() {
       } 
     }); 
 
-  var sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '"+DATABASE+"') AND (TABLE_NAME = 'user')"
-  connection.query(sql, function (err, result) {  
-    if (err){
-      console.log("An error occured while selecting number of user tables")
-    } else{
-      if (result[0].cnt!=1){
-        var sql = "CREATE TABLE user (name VARCHAR(255) PRIMARY KEY, password VARCHAR(255))";
-        connection.query(sql, function (err, result) {
-          if (err){
-            console.log(err)
-            throw err;
-          } 
-           console.log("user table created");
-        });
-      } else {
-        console.log("user table already exists")
-      }
-    } 
-  }); 
 });                                    
                                          
   connection.on('error', function(err) {
